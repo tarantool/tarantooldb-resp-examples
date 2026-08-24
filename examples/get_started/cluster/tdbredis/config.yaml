@@ -1,0 +1,15 @@
+config:
+  storage:
+    endpoints:
+      - uri: 'config-storage-1:4401'
+        login: sampleuser
+        password: '123456'
+      - uri: 'config-storage-2:4402'
+        login: sampleuser
+        password: '123456'
+      - uri: 'config-storage-3:4403'
+        login: sampleuser
+        password: '123456'
+    prefix: /tdbredis
+    timeout: 3
+    reconnect_after: 5

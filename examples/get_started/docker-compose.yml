@@ -1,0 +1,79 @@
+services:
+  config-storage-1:
+    image: tdb_redis:2x-latest
+    volumes:
+      - ./cluster/config_storage:/tdb_redis/instances.enabled/tarantool_config_storage
+    command: ["tarantool", "--name", "instance001", "--config", "instances.enabled/tarantool_config_storage/config.yaml"]
+
+  config-storage-2:
+    image: tdb_redis:2x-latest
+    volumes:
+      - ./cluster/config_storage:/tdb_redis/instances.enabled/tarantool_config_storage
+    command: ["tarantool", "--name", "instance002", "--config", "instances.enabled/tarantool_config_storage/config.yaml"]
+
+  config-storage-3:
+    image: tdb_redis:2x-latest
+    volumes:
+      - ./cluster/config_storage:/tdb_redis/instances.enabled/tarantool_config_storage
+    command: ["tarantool", "--name", "instance003", "--config", "instances.enabled/tarantool_config_storage/config.yaml"]
+
+  init:
+    image: tdb_redis:2x-latest
+    volumes:
+      - ./cluster/tdbredis:/tdb_redis/instances.enabled/tdbredis
+      - ./init.sh:/init.sh:ro
+    entrypoint: ["/bin/bash", "/init.sh"]
+    depends_on:
+      - config-storage-1
+      - config-storage-2
+      - config-storage-3
+
+  failover:
+    image: tdb_redis:2x-latest
+    volumes:
+      - ./cluster/tdbredis:/tdb_redis/instances.enabled/tdbredis
+    command: ["tarantool", "--failover", "--config", "instances.enabled/tdbredis/config.yaml"]
+    ports:
+      - "36379:26379"
+    depends_on:
+      init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: "bash -c 'exec 3<>/dev/tcp/127.0.0.1/26379'"
+      interval: 2s
+      timeout: 2s
+      retries: 10
+      start_period: 2s
+
+  tdbredis-1:
+    image: tdb_redis:2x-latest
+    volumes:
+      - ./cluster/tdbredis:/tdb_redis/instances.enabled/tdbredis
+    command: ["tarantool", "--name", "instance001", "--config", "instances.enabled/tdbredis/config.yaml"]
+    ports:
+      - "46379:6379"
+    depends_on:
+      failover:
+        condition: service_healthy
+
+  tdbredis-2:
+    image: tdb_redis:2x-latest
+    volumes:
+      - ./cluster/tdbredis:/tdb_redis/instances.enabled/tdbredis
+    command: ["tarantool", "--name", "instance002", "--config", "instances.enabled/tdbredis/config.yaml"]
+    ports:
+      - "46380:6380"
+    depends_on:
+      failover:
+        condition: service_healthy
+
+  tdbredis-3:
+    image: tdb_redis:2x-latest
+    volumes:
+      - ./cluster/tdbredis:/tdb_redis/instances.enabled/tdbredis
+    command: ["tarantool", "--name", "instance003", "--config", "instances.enabled/tdbredis/config.yaml"]
+    ports:
+      - "46381:6381"
+    depends_on:
+      failover:
+        condition: service_healthy
