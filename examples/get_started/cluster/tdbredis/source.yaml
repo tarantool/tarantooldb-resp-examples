@@ -1,0 +1,50 @@
+credentials:
+  users:
+    # Demo credentials, do NOT use in production.
+    replicator:
+      password: 'topsecret'
+      roles: [ replication ]
+      privileges:
+        - permissions: [ execute ]
+          lua_call: [ 'failover.execute' ]
+
+iproto:
+  advertise:
+    peer:
+      login: replicator
+
+replication:
+  failover: supervised
+
+roles: ["tdb_redis_role"]
+
+roles_cfg:
+  tdb_redis_role:
+    sentinel_port: 26379
+
+groups:
+  group001:
+    replicasets:
+      replicaset001:
+        instances:
+          instance001:
+            roles_cfg:
+              tdb_redis_role:
+                port: 6379
+            iproto:
+              listen:
+                - uri: 'tdbredis-1:3301'
+          instance002:
+            roles_cfg:
+              tdb_redis_role:
+                port: 6380
+            iproto:
+              listen:
+                - uri: 'tdbredis-2:3302'
+          instance003:
+            roles_cfg:
+              tdb_redis_role:
+                port: 6381
+            iproto:
+              listen:
+                - uri: 'tdbredis-3:3303'
