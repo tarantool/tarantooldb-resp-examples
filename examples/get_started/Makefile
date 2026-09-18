@@ -16,10 +16,11 @@ endif
 
 start:
 	$(DOCKER_COMPOSE) up -d --build
+	./wait.sh
 	@echo ""
 	@echo "Cluster is up. Check it:"
 	@echo "  redis-cli -p 46379 ping"
-	@echo "  redis-cli -p 36379 sentinel master replicaset001"
+	@echo "  redis-cli -p 36379 sentinel master storages001"
 
 stop:
 	$(DOCKER_COMPOSE) down -v

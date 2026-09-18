@@ -16,21 +16,22 @@ iproto:
 replication:
   failover: supervised
 
-roles: ["tdb_redis_role"]
+stateboard:
+  enabled: true
 
-roles_cfg:
-  tdb_redis_role:
-    sentinel_port: 26379
+roles: ["tdb_redis_role", "tdb_redis_sentinel"]
 
 groups:
   group001:
     replicasets:
-      replicaset001:
+      storages001:
         instances:
           instance001:
             roles_cfg:
               tdb_redis_role:
                 port: 6379
+              tdb_redis_sentinel:
+                port: 26379
             iproto:
               listen:
                 - uri: 'tdbredis-1:3301'
@@ -38,6 +39,8 @@ groups:
             roles_cfg:
               tdb_redis_role:
                 port: 6380
+              tdb_redis_sentinel:
+                port: 26380
             iproto:
               listen:
                 - uri: 'tdbredis-2:3302'
@@ -45,6 +48,8 @@ groups:
             roles_cfg:
               tdb_redis_role:
                 port: 6381
+              tdb_redis_sentinel:
+                port: 26381
             iproto:
               listen:
                 - uri: 'tdbredis-3:3303'
