@@ -33,17 +33,9 @@ services:
     volumes:
       - ./cluster/tdbredis:/tdb_redis/instances.enabled/tdbredis
     command: ["tarantool", "--failover", "--config", "instances.enabled/tdbredis/config.yaml"]
-    ports:
-      - "36379:26379"
     depends_on:
       init:
         condition: service_completed_successfully
-    healthcheck:
-      test: "bash -c 'exec 3<>/dev/tcp/127.0.0.1/26379'"
-      interval: 2s
-      timeout: 2s
-      retries: 10
-      start_period: 2s
 
   tdbredis-1:
     image: tdb_redis:2x-latest
@@ -52,9 +44,10 @@ services:
     command: ["tarantool", "--name", "instance001", "--config", "instances.enabled/tdbredis/config.yaml"]
     ports:
       - "46379:6379"
+      - "36379:26379"
     depends_on:
       failover:
-        condition: service_healthy
+        condition: service_started
 
   tdbredis-2:
     image: tdb_redis:2x-latest
@@ -63,9 +56,10 @@ services:
     command: ["tarantool", "--name", "instance002", "--config", "instances.enabled/tdbredis/config.yaml"]
     ports:
       - "46380:6380"
+      - "36380:26380"
     depends_on:
       failover:
-        condition: service_healthy
+        condition: service_started
 
   tdbredis-3:
     image: tdb_redis:2x-latest
@@ -74,6 +68,7 @@ services:
     command: ["tarantool", "--name", "instance003", "--config", "instances.enabled/tdbredis/config.yaml"]
     ports:
       - "46381:6381"
+      - "36381:26381"
     depends_on:
       failover:
-        condition: service_healthy
+        condition: service_started
