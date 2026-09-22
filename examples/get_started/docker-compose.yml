@@ -4,18 +4,24 @@ services:
     volumes:
       - ./cluster/config_storage:/tdb_redis/instances.enabled/tarantool_config_storage
     command: ["tarantool", "--name", "instance001", "--config", "instances.enabled/tarantool_config_storage/config.yaml"]
+    ports:
+      - "4401:4401"
 
   config-storage-2:
     image: tdb_redis:2x-latest
     volumes:
       - ./cluster/config_storage:/tdb_redis/instances.enabled/tarantool_config_storage
     command: ["tarantool", "--name", "instance002", "--config", "instances.enabled/tarantool_config_storage/config.yaml"]
+    ports:
+      - "4402:4402"
 
   config-storage-3:
     image: tdb_redis:2x-latest
     volumes:
       - ./cluster/config_storage:/tdb_redis/instances.enabled/tarantool_config_storage
     command: ["tarantool", "--name", "instance003", "--config", "instances.enabled/tarantool_config_storage/config.yaml"]
+    ports:
+      - "4403:4403"
 
   init:
     image: tdb_redis:2x-latest
@@ -72,3 +78,12 @@ services:
     depends_on:
       failover:
         condition: service_started
+
+  tcm-1:
+    image: tarantooldb:3x-latest
+    ports:
+      - "8081:8081"
+    volumes:
+      - ./tcm.yml:/app/tarantooldb/tcm.yml
+      - ../main_cluster/config.yml:/app/tarantooldb/config.yml
+    command: ./tcm -c tcm.yml

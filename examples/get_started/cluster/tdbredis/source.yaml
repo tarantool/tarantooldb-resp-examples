@@ -1,6 +1,9 @@
 credentials:
   users:
     # Demo credentials, do NOT use in production.
+    admin:
+      password: 'secret'
+      roles: [ super ]
     replicator:
       password: 'topsecret'
       roles: [ replication ]

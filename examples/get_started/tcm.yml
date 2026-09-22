@@ -1,0 +1,42 @@
+http:
+    host: 0.0.0.0
+    port: 8081
+
+storage:
+    provider: tarantool
+    tarantool:
+        prefix: /tcm
+        username: sampleuser
+        password: '123456'
+        addrs:
+            - config-storage-1:4401
+            - config-storage-2:4402
+            - config-storage-3:4403
+security:
+  bootstrap-password: secret
+
+cluster:
+  tt-command: /app/tarantooldb/tt
+
+feature:
+  tuples: true
+
+initial-settings:
+  clusters:
+    - name: Tarantool DB Cluster
+      id: 00000000-0000-0000-0000-000000000001
+      storage-connection:
+        provider: tarantool
+        tarantool-connection:
+          prefix: /tdbredis
+          username: sampleuser
+          password: '123456'
+          endpoints:
+            - config-storage-1:4401
+            - config-storage-2:4402
+            - config-storage-3:4403
+      tarantool-connection:
+        username: "admin"
+        password: "secret"
+
+default-cluster: false
