@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Publishes the tdbredis cluster configuration to the config storage cluster.
+# Publishes the Tarantool Database (RESP) cluster configuration to the configuration storage cluster.
 # Retries the publish across all endpoints until one accepts (the leader,
 # followers reject as read-only, unreachable nodes fail to connect).
 # Exits non-zero on timeout.
@@ -15,7 +15,7 @@ STORAGE=(
 TIMEOUT=60
 
 publish_config() {
-    echo "Publishing the tdbredis cluster config..."
+    echo "Publishing the TDB RESP cluster configuration..."
     local deadline=$((SECONDS + TIMEOUT)) addr
     while [ "$SECONDS" -lt "$deadline" ]; do
         for addr in "${STORAGE[@]}"; do
@@ -28,7 +28,7 @@ publish_config() {
         done
         sleep 1
     done
-    echo "ERROR: failed to publish config within ${TIMEOUT}s" >&2
+    echo "ERROR: failed to publish configuration within ${TIMEOUT}s" >&2
     return 1
 }
 

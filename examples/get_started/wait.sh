@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Waits until the started cluster is ready to serve clients: every
-# TDB-Redis instance and every Sentinel must answer a RESP PING.
+# Tarantool Database (RESP) instance and every Sentinel must answer a RESP PING.
 # Uses bash /dev/tcp, so no redis-cli is required.
 # Exits non-zero on timeout.
 
 set -euo pipefail
 
 PORTS=(
-    "46379" "46380" "46381"  # TDB-Redis RESP
+    "46379" "46380" "46381"  # Tarantool Database (RESP)
     "36379" "36380" "36381"  # Sentinel
 )
 TIMEOUT=120
